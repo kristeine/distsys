@@ -8,12 +8,12 @@ import java.rmi.RemoteException;
 /**
  * Created by kristine on 03/02/14.
  */
-public class TicTacToeServer implements TicTacRemoteInterface{
+public class TicTacToePlayer implements TicTacRemoteInterface{
 	String url;
 	String playerName;
 	TicTacToe game;
 
-	TicTacToeServer(String playerName, String url) {
+	TicTacToePlayer (String playerName, String url) {
 		this.playerName = playerName;
 		this.url = url;
 	}
@@ -23,11 +23,14 @@ public class TicTacToeServer implements TicTacRemoteInterface{
 	}
 
 	@Override
-	public String connect(String playerName, TicTacToeServer opponent) throws RemoteException {
+	public void setCell(int x, int y, char mark) {
+		//do something?
+	}
+
+	@Override
+	public String connect(String playerName, TicTacToePlayer opponent) throws RemoteException {
 		try {
-			Naming.bind(this.url, this);
-		} catch (java.rmi.AlreadyBoundException e) {
-			e.printStackTrace();
+			Naming.rebind(this.url, this);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -43,6 +46,5 @@ public class TicTacToeServer implements TicTacRemoteInterface{
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-
 	}
 }
