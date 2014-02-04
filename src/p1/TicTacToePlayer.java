@@ -15,12 +15,11 @@ import java.rmi.server.UnicastRemoteObject;
  * Created by kristine on 03/02/14.
  */
 public class TicTacToePlayer extends UnicastRemoteObject implements Player{
-	String url;
-	int portNr;
-	public String playerName;
-	TicTacToe game;
-	Player opponent;
-	public String status;
+	private String url;
+	private int portNr;
+	private String playerName;
+	private TicTacToe game;
+	private Player opponent;
 	private char mark;
 	private boolean myTurn;
 	
@@ -30,23 +29,19 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 		this.url = url;
 		this.game = game;
 
-		System.out.println(playerName+": doing lookup");
 		this.opponent = lookup(url);
 
-		//Remote opponent = lookup(url);
 		if (opponent != null) {
-			System.out.println(playerName+": opponent "+ opponent.getName());
 			//connect to opponent and give notice
 			opponent.connect(this);
 			mark = 'O';
 			myTurn = true;
-			this.status = playerName + " waiting";
+			game.setStatus("Found opponent!");
 		} else {
-			// bind, passively wait for opponent, set mark
 			bindUrl();
 			mark = 'X';
 			myTurn = false;
-			this.status = playerName + " waiting";
+			game.setStatus("Waiting for opponent to connect");
 		}
 	}
 
@@ -71,20 +66,24 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 	}
 
 	public void setCell(int x, int y, char mark) {
-		System.out.println("setting cell");
 		myTurn = !myTurn;
+		if (myTurn){
+			game.setStatus("It's your turn!");
+		}
+		else{
+			game.setStatus("Waiting for opponent to make a move");
+		}
 		game.valueChanged(x, y, mark);
 	}
 
 	public boolean connect(Player player) {
 		this.opponent = player;
-		System.out.println("connected...");
+		game.setStatus("Found opponent!");
 		return true;
 	}
 
 	public boolean bindUrl() {
 		boolean check = true;
-			System.out.println("Lager registry");
 			try{
 				Registry registry;
 				registry = LocateRegistry.createRegistry(3090);
