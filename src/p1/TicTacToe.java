@@ -62,10 +62,10 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
         setVisible(true);
 	    try {
 		    System.out.println("Creating player 1");
-		    TicTacToePlayer p1 = new TicTacToePlayer("p1", "//129.241.103.4:3090/TicTac");
+		    TicTacToePlayer p1 = new TicTacToePlayer("p1", "//localhost:1099/TicTac");
 		    setStatusMessage(p1.status);
 		    System.out.println("Creating player 2");
-		    TicTacToePlayer p2 = new TicTacToePlayer("p2", "//129.241.103.4:3090/TicTac");
+		    TicTacToePlayer p2 = new TicTacToePlayer("p2", "//localhost:1099/TicTac");
 		    setStatusMessage(p2.status);
 	    } catch (RemoteException e) {
 		    e.printStackTrace();
