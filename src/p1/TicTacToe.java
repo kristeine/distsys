@@ -62,7 +62,7 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
         setVisible(true);
 	    try {
 		    System.out.println("Creating player 1");
-		    player = new TicTacToePlayer("p1", "//localhost/TicTac", 1099);
+		    player = new TicTacToePlayer("p1", "//localhost/TicTac", 1099, this);
 		    setStatusMessage(player.status);
 	    } catch (RemoteException e) {
 		    e.printStackTrace();
@@ -89,14 +89,25 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
       if (x == -1 || y == -1 || !boardModel.isEmpty(x, y))
           return;
       
+      
       try{
-		player.notifyOpponent(x, y);
+		valueChanged(x, y, player.getMark());
 	} catch (RemoteException e1){
 		e1.printStackTrace();
 	}
-      
-      if (boardModel.setCell(x, y, playerMarks[currentPlayer]))
-          setStatusMessage("Player " + playerMarks[currentPlayer] + " won!");
-      currentPlayer = 1 - currentPlayer; // The next turn is by the other player.
+  }
+  
+  public void valueChanged(int x, int y, char mark){
+	  System.out.println(player.myTurn());
+	  if (player.myTurn()){
+		  try{
+			  player.notifyOpponent(x, y);
+		  } catch (RemoteException e1){
+			  e1.printStackTrace();
+		  }
+		  if (boardModel.setCell(x, y, mark))
+			  setStatusMessage("Player " + mark + " won!");
+		  currentPlayer = 1 - currentPlayer; // The next turn is by the other player.
+	  }
   }
 }

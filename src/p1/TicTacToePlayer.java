@@ -6,6 +6,7 @@ import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.UnmarshalException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -19,13 +20,15 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 	public String playerName;
 	TicTacToe game;
 	Player opponent;
-	private int playerNumber;
 	public String status;
 	private char mark;
+	private boolean myTurn;
+	
 
-	TicTacToePlayer (String playerName, String url, int portNr) throws RemoteException{
+	TicTacToePlayer (String playerName, String url, int portNr, TicTacToe game) throws RemoteException{
 		this.playerName = playerName;
 		this.url = url;
+		this.game = game;
 
 		System.out.println(playerName+": doing lookup");
 		this.opponent = lookup(url);
@@ -35,14 +38,14 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 			System.out.println(playerName+": opponent "+ opponent.getName());
 			//connect to opponent and give notice
 			opponent.connect(this);
-			playerNumber = 1;
 			mark = 'O';
+			myTurn = true;
 			this.status = playerName + " waiting";
 		} else {
 			// bind, passively wait for opponent, set mark
 			bindUrl();
-			playerNumber = 0;
 			mark = 'X';
+			myTurn = false;
 			this.status = playerName + " waiting";
 		}
 	}
@@ -68,11 +71,13 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 	}
 
 	public void setCell(int x, int y, char mark) {
-		System.out.println("skjer noe");
+		System.out.println("setting cell");
+		myTurn = !myTurn;
+		game.valueChanged(x, y, mark);
 	}
 
 	public boolean connect(Player player) {
-		this.opponent = player;  //listeners?
+		this.opponent = player;
 		System.out.println("connected...");
 		return true;
 	}
@@ -107,6 +112,21 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 	}
 	
 	public void notifyOpponent(int x, int y) throws RemoteException{
+		try{
 		opponent.setCell(x,y, this.mark);
+		} catch( UnmarshalException e)
+		{}
+	}
+	
+	public char getMark() throws RemoteException {
+		return this.mark;
+	}
+	
+	public boolean myTurn(){
+		return this.myTurn;
+	}
+	
+	public void setMyTurn(boolean turn){
+		this.myTurn = turn;
 	}
 }

@@ -13,4 +13,6 @@ public interface Player extends Remote {
 	public void disconnect() throws RemoteException;
 	
 	public String getName() throws RemoteException;
+	public char getMark() throws RemoteException;
+	
 }
