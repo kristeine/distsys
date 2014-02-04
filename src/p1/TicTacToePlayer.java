@@ -22,8 +22,9 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 		this.playerName = playerName;
 		this.url = url;
 
-		this.opponent = lookup(url);
 		System.out.println(playerName+": doing lookup");
+		this.opponent = lookup(url);
+
 		//Remote opponent = lookup(url);
 		if (opponent != null) {
 			System.out.println(playerName+": opponent "+opponent.playerName);
