@@ -3,7 +3,6 @@ package p1;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -38,9 +37,6 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 			playerNumber = 0;
 			this.status = playerName + " waiting";
 		}
-		// do naminglookup
-		// if not in use, bind, passively wait for opponent, set mark
-		// else connect to opponent and give notice
 	}
 
 	public TicTacToePlayer lookup(String url) throws RemoteException{
