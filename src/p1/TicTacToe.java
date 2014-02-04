@@ -4,6 +4,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
@@ -58,6 +60,16 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
         int centerY = (int)(Toolkit.getDefaultToolkit().getScreenSize().getHeight() - getSize().height) / 2;
         setLocation(centerX, centerY);
         setVisible(true);
+	    try {
+		    System.out.println("Creating player 1");
+		    TicTacToePlayer p1 = new TicTacToePlayer("p1", "//127.0.0.1:1099/TicTac");
+		    setStatusMessage(p1.status);
+		    System.out.println("Creating player 2");
+		    TicTacToePlayer p2 = new TicTacToePlayer("p2", "//127.0.0.1:1099/TicTac");
+		    setStatusMessage(p2.status);
+	    } catch (RemoteException e) {
+		    e.printStackTrace();
+	    }
     }
 
 	void setStatusMessage(String status) {
