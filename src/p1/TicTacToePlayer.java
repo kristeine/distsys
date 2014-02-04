@@ -1,6 +1,8 @@
 package p1;
 
 import java.net.MalformedURLException;
+import java.rmi.AccessException;
+import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -25,7 +27,6 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 
 		System.out.println(playerName+": doing lookup");
 		this.opponent = lookup(url);
-		System.out.println(opponent);
 
 		//Remote opponent = lookup(url);
 		if (opponent != null) {
@@ -44,15 +45,17 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 
 	public Player lookup(String url) throws RemoteException{
 		Player player = null;
-		try {
+		try
+		{
 			Registry registry = LocateRegistry.getRegistry("localhost", 3090);
 			player = (Player) registry.lookup("TicTac");
-//			oppo = (TicTacToePlayer) Naming.lookup(url);
-		} catch (NotBoundException e) {
-//			e.printStackTrace();
-		} catch (RemoteException e) {
-			e.printStackTrace();
+		} catch (NotBoundException e){
+			//do nothing
+		} catch (ConnectException e)
+		{
+			//no nothing
 		}
+
 		return player;
 	}
 
@@ -72,18 +75,16 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 
 	public boolean bindUrl() {
 		boolean check = true;
-		try {
 			System.out.println("Lager registry");
-			Registry registry = LocateRegistry.createRegistry(3090);
-			registry.rebind("TicTac", this);
-//			Naming.rebind(this.url, this);
-//		} catch (MalformedURLException e) {
-//			e.printStackTrace();
-//			check = false;
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			check = false;
-		}
+			try{
+				Registry registry;
+				registry = LocateRegistry.createRegistry(3090);
+				registry.rebind("TicTac", this);
+			} catch (AccessException e){
+				e.printStackTrace();
+			} catch (RemoteException e){
+				e.printStackTrace();
+			}
 		return check;
 	}
 
