@@ -4,9 +4,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
 /**
  * A Tic Tac Toe application.
@@ -22,6 +20,8 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     private final JLabel statusLabel = new JLabel();
     private final char playerMarks[] = {'X', 'O'};
     private int currentPlayer = 0; // Player to set the next mark.
+    private TicTacToePlayer player;
+    
 
     public static void main(String args[]) {
         new TicTacToe();
@@ -62,11 +62,8 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
         setVisible(true);
 	    try {
 		    System.out.println("Creating player 1");
-		    TicTacToePlayer p1 = new TicTacToePlayer("p1", "//localhost:1099/TicTac");
-		    setStatusMessage(p1.status);
-		    System.out.println("Creating player 2");
-		    TicTacToePlayer p2 = new TicTacToePlayer("p2", "//localhost:1099/TicTac");
-		    setStatusMessage(p2.status);
+		    player = new TicTacToePlayer("p1", "//localhost/TicTac", 1099);
+		    setStatusMessage(player.status);
 	    } catch (RemoteException e) {
 		    e.printStackTrace();
 	    }
@@ -91,6 +88,13 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
       int y = board.getSelectedRow();
       if (x == -1 || y == -1 || !boardModel.isEmpty(x, y))
           return;
+      
+      try{
+		player.notifyOpponent(x, y);
+	} catch (RemoteException e1){
+		e1.printStackTrace();
+	}
+      
       if (boardModel.setCell(x, y, playerMarks[currentPlayer]))
           setStatusMessage("Player " + playerMarks[currentPlayer] + " won!");
       currentPlayer = 1 - currentPlayer; // The next turn is by the other player.

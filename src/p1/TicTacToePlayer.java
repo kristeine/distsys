@@ -15,13 +15,15 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 	String url;
+	int portNr;
 	public String playerName;
 	TicTacToe game;
 	Player opponent;
 	private int playerNumber;
 	public String status;
+	private char mark;
 
-	TicTacToePlayer (String playerName, String url) throws RemoteException{
+	TicTacToePlayer (String playerName, String url, int portNr) throws RemoteException{
 		this.playerName = playerName;
 		this.url = url;
 
@@ -34,11 +36,13 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 			//connect to opponent and give notice
 			opponent.connect(this);
 			playerNumber = 1;
+			mark = 'O';
 			this.status = playerName + " waiting";
 		} else {
 			// bind, passively wait for opponent, set mark
 			bindUrl();
 			playerNumber = 0;
+			mark = 'X';
 			this.status = playerName + " waiting";
 		}
 	}
@@ -48,7 +52,7 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 		try
 		{
 			Registry registry = LocateRegistry.getRegistry("localhost", 3090);
-			player = (Player) registry.lookup("TicTac");
+			player = (Player) registry.lookup(url);
 		} catch (NotBoundException e){
 			//do nothing
 		} catch (ConnectException e)
@@ -64,7 +68,7 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 	}
 
 	public void setCell(int x, int y, char mark) {
-		//do something?
+		System.out.println("skjer noe");
 	}
 
 	public boolean connect(Player player) {
@@ -79,7 +83,7 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 			try{
 				Registry registry;
 				registry = LocateRegistry.createRegistry(3090);
-				registry.rebind("TicTac", this);
+				registry.rebind(url, this);
 			} catch (AccessException e){
 				e.printStackTrace();
 			} catch (RemoteException e){
@@ -100,5 +104,9 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 	
 	public String getName() throws RemoteException{
 		return playerName;
+	}
+	
+	public void notifyOpponent(int x, int y) throws RemoteException{
+		opponent.setCell(x,y, this.mark);
 	}
 }
