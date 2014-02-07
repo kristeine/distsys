@@ -18,7 +18,6 @@ public class TicTacToe extends JFrame implements ListSelectionListener {
     private final BoardModel boardModel;
     private final JTable board;
     private final JLabel statusLabel = new JLabel();
-    private final char playerMarks[] = {'X', 'O'};
     private int currentPlayer = 0; // Player to set the next mark.
     private TicTacToePlayer player;
     

@@ -49,13 +49,13 @@ public class TicTacToePlayer extends UnicastRemoteObject implements Player{
 		Player player = null;
 		try
 		{
-			Registry registry = LocateRegistry.getRegistry("localhost", 3090);
+			Registry registry = LocateRegistry.getRegistry("78.91.3.18", 3090);
 			player = (Player) registry.lookup(url);
 		} catch (NotBoundException e){
 			//do nothing
 		} catch (ConnectException e)
 		{
-			//no nothing
+			//do othing
 		}
 
 		return player;
