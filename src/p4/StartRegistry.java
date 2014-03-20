@@ -1,3 +1,4 @@
+package p4;
 import java.rmi.registry.*;
 
 public class StartRegistry
