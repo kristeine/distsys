@@ -383,6 +383,13 @@ public class ServerImpl extends UnicastRemoteObject implements Server
   {
     Resource r = resources.get(resourceId);
     boolean result = r.lock(transactionId);
+
+	while (!result) {
+		List<Integer> serverIds = new ArrayList<Integer>();
+		int transactionOwner = r.getLockOwner()/1000;
+		serverIds.add(transactionOwner);
+		ProbeThread t = new ProbeThread(servers, serverIds, transactionOwner);
+	}
 	if (result) {
 		TimeoutThread t = new TimeoutThread(this, r, resourceId, transactionId);
 	}
@@ -602,4 +609,16 @@ public class ServerImpl extends UnicastRemoteObject implements Server
       re.printStackTrace();
     }
   }
+
+	public void probe(List<Integer> serverIds) throws RemoteException{
+		if (serverIds.contains(serverId)) {
+			activeTransaction.forceAbort();
+		}
+		ResourceAccess ra = activeTransaction.getWaitingForResource();
+		if (ra != null) {
+			serverIds.add(serverId);
+			System.out.println("Server " + serverId + " probing server " + ra.serverId);
+			ra.server.probe(serverIds);
+		}
+	}
 }

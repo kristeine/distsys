@@ -251,4 +251,12 @@ class Transaction
       owner.println("Failed to unlock resource " + resource.resourceId + " at server " + resource.serverId + " due to communication failure.", transactionId);
     }
   }
+
+	public void forceAbort(){
+		System.out.println("Forcing abort on transaction "+transactionId);
+		abort();
+	}
+	public ResourceAccess getWaitingForResource() {
+		return waitingForResource;
+	}
 }
