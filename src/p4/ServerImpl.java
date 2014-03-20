@@ -383,6 +383,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server
   {
     Resource r = resources.get(resourceId);
     boolean result = r.lock(transactionId);
+	if (result) {
+		TimeoutThread t = new TimeoutThread(this, resourceId, transactionId);
+	}
     if (gui != null)
       gui.updateResourceTable(resources);
     return result;
