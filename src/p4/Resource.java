@@ -26,22 +26,19 @@ class Resource
    * @param transactionId The ID of the transaction that wants the lock.
    * @return Whether or not the lock could be acquired.
    */
-  synchronized boolean lock(int transactionId)
+  synchronized int lock(int transactionId)
   {
     if (lockOwner == transactionId) {
-      System.err.println("Error: Transaction " + transactionId + " tried to lock a resource it already has locked!");
-      return false;
+      System.out.println("Error: Transaction " + transactionId + " tried to lock a resource it already has locked!");
+      return -1;   //you already have the resource
     }
-
-    while (lockOwner != NOT_LOCKED) {
-      try {
-        wait();
-      } catch (InterruptedException ie) {
-      }
+	else if (lockOwner != NOT_LOCKED){
+	    System.err.println("Resource is locked by someone else");
+	    return 0;  //someone else locked the resource
     }
 
     lockOwner = transactionId;
-    return true;
+    return 1;     //you got to lock the resource
   }
 
   /**
@@ -55,7 +52,7 @@ class Resource
   synchronized boolean unlock(int transactionId)
   {
     if (lockOwner == NOT_LOCKED || lockOwner != transactionId) {
-      System.err.println("Error: Transaction " + transactionId + " tried to unlock a resource without owning the lock!");
+      System.out.println("Error: Transaction " + transactionId + " tried to unlock a resource without owning the lock!");
       return false;
     }
 
