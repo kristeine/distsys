@@ -33,7 +33,7 @@ class Resource
       return -1;   //you already have the resource
     }
 	else if (lockOwner != NOT_LOCKED){
-	    System.err.println("Resource is locked by someone else");
+	    System.err.println("Server "+getLockOwner()/1000+" has the resource server "+transactionId/1000+" needs!");
 	    return 0;  //someone else locked the resource
     }
 

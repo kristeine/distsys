@@ -254,7 +254,9 @@ class Transaction
 
 	public void forceAbort(){
 		System.out.println("Forcing abort on transaction "+transactionId);
-		abort();
+		System.out.println("Aborting transaction " + transactionId + '.');
+		releaseLocks();
+		System.out.println("Transaction " + transactionId + " aborted.");
 	}
 	public ResourceAccess getWaitingForResource() {
 		return waitingForResource;

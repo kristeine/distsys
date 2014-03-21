@@ -383,20 +383,20 @@ public class ServerImpl extends UnicastRemoteObject implements Server
   {
     Resource r = resources.get(resourceId);
     int result = r.lock(transactionId);
-	if (result==0) {   //while someone else has the resource
+	while (result==0) {   //while someone else has the resource
 		System.out.println("Didnt lock resource");
+		// create list to send to probing
 		List<Integer> serverIds = new ArrayList<Integer>();
 		int transactionOwner = r.getLockOwner()/1000;
 		serverIds.add(transactionOwner);
 		ProbeThread t = new ProbeThread(servers, serverIds, transactionOwner);
-		while (result == 0){
-			try{
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			result = r.lock(transactionId);
+		//try again after 2 seconds
+		try{
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+		result = r.lock(transactionId);
 	}
 	if (result==1 && !Globals.PROBING_ENABLED) {  //if you got the resource and we use timeouts
 		TimeoutThread t = new TimeoutThread(this, r, resourceId, transactionId);
@@ -620,6 +620,7 @@ public class ServerImpl extends UnicastRemoteObject implements Server
 
 	public void probe(List<Integer> serverIds) throws RemoteException{
 		if (serverIds.contains(serverId)) {
+			System.out.println("Oops, server "+serverId+" is blocking itself! Forcing abort!");
 			activeTransaction.forceAbort();
 			return;
 		}
@@ -628,6 +629,9 @@ public class ServerImpl extends UnicastRemoteObject implements Server
 			serverIds.add(serverId);
 			System.out.println("Server " + serverId + " probing server " + ra.serverId);
 			ra.server.probe(serverIds);
+		}
+		else {
+			System.out.println("Server "+serverId+" was probed but isnt blocked");
 		}
 	}
 }
